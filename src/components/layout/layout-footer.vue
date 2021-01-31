@@ -2,7 +2,7 @@
     <div id="layout-footer">
         <div class="footer-main">
             <div class="footer-item" v-if="socials.length">
-                <div v-for="item in socials" :key="item.id"><a target="_blank" class="out-link" :href="item.href"><i class="iconfont" :class="item.icon"></i>{{item.title}}</a></div>
+                <div v-for="item in socials" :key="item.id"><a target="_blank" class="out-link" :href="item.href"><i class="iconfont" :class="item.icon"></i>{{item.name}}</a></div>
             </div>
             <div class="footer-item">
                 <div style="font-size:17px;font-weight: bold;">资源</div>

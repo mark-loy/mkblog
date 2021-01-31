@@ -1,31 +1,39 @@
 <template>
     <article class="post post-list">
         <div class="post-entry">
+            <!-- 文章焦点图 -->
             <div class="feature">
                 <router-link :to="`/article/${post.id}`">
-                    <img :src="post.banner"/>
+                    <img :src="post.imageUrl"/>
                 </router-link>
             </div>
+            <!-- 文章标题 -->
             <h1 class="entry-title">
                 <router-link :to="`/article/${post.id}`"><span v-if="post.isTop" style="color:#ff6d6d;font-weight:600">[置顶] </span>{{post.title}}</router-link>
             </h1>
+            <!-- 文章发表时间 -->
             <div class="p-time">
-                <i class="iconfont iconmeditor-time"></i> {{post.pubTime | parseTime}}<i v-if="post.isHot" class="iconfont iconfire" style="margin-left: 5px;color: #ff6d6d;"></i>
+                <i class="iconfont iconmeditor-time"></i> {{post.gmtModified | parseTime}}<i v-if="post.isHot" class="iconfont iconfire" style="margin-left: 5px;color: #ff6d6d;"></i>
             </div>
+            <!-- 文章描述 -->
             <p class="summary">{{post.summary}}</p>
+
             <footer class="entry-footer">
                 <div class="post-more">
                     <router-link :to="`/article/${post.id}`"><i class="iconfont iconfish-li" style="font-size: 25px;"></i></router-link>
                 </div>
                 <div class="info-meta">
+                    <!-- 评论数 -->
                     <div class="comnum">
                         <span>
                             <i class="iconfont iconcomment"></i>
-                            <a href="https://zhebk.cn/Web/Akina.html">{{post.commentsCount}} 条评论</a>
+                            <!-- 跳转到该文章的评论区 -->
+                            <a href="https://zhebk.cn/Web/Akina.html">{{post.commentCount}} 条评论</a>
                         </span>
                     </div>
+                    <!-- 浏览数，热度 -->
                     <div class="views">
-                        <span><i class="iconfont iconeyes"></i>{{post.viewsCount}} 热度</span>
+                        <span><i class="iconfont iconeyes"></i>{{post.viewCount}} 热度</span>
                     </div>
                 </div>
             </footer>

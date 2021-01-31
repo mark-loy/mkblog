@@ -7,6 +7,8 @@ import './assets/font/iconfont.css'
 require('./Mock')
 import {parseTime} from './utils'
 
+
+
 Vue.config.productionTip = false
 Vue.filter('parseTime', (v) => parseTime(v,'{y}-{m}-{d}'))
 new Vue({

@@ -24,6 +24,12 @@ const routes = [
         meta: { title: '搜索', params: 'words'}
     },
     {
+        path: '/search/:tag',
+        name: 'search',
+        component: () => import('../views/Home.vue'),
+        meta: { title: '标签', params: 'tag'}
+    },
+    {
         path: '/about',
         name: 'about',
         component: () => import('../views/About.vue'),

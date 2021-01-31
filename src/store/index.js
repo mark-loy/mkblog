@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {getTimeInterval} from '../utils/index'
-import {fetchSocial,fetchSiteInfo} from '@/api'
+import {fetchSocial,fetchSiteInfo} from '@/api/'
+import siteApi from '@/api/site'
 
 Vue.use(Vuex)
 // 略:后台获取系统运行时间
@@ -44,8 +45,9 @@ const actions = {
             if (state.websiteInfo){
                 resolve(state.websiteInfo)
             }else {
-                fetchSiteInfo().then(res => {
-                    let data = res.data || {}
+                // 获取所有的站点信息
+                siteApi.selectSiteInfo().then(res => {
+                    let data = res.data.siteInfo || {}
                     commit('SET_SITE_INFO',data);
                     resolve(data);
                 }).catch(err => {
@@ -59,8 +61,8 @@ const actions = {
             if (state.socials){
                 resolve(state.socials)
             } else {
-                fetchSocial().then(res =>{
-                    let data = res.data || []
+                siteApi.selectSocialInfo().then(res =>{
+                    let data = res.data.socials || []
                     commit('SET_SOCIALS',data);
                     resolve(data);
                 }).catch(err =>{

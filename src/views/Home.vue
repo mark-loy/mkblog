@@ -1,12 +1,13 @@
 <template>
     <div class="home">
-        <banner isHome="true"></banner>
+        <banner isHome="true" :src="bannerUrl"></banner>
         <div class="site-content animate">
             <!--通知栏-->
             <div class="notify">
                 <div class="search-result" v-if="hideSlogan">
                     <span v-if="searchWords">搜索结果："{{searchWords}}" 相关文章</span>
                     <span v-else-if="category">分类 "{{category}}" 相关文章</span>
+                    <span v-else-if="tagInfo">标签 "{{taginfo}}" 相关文章</span>
                 </div>
                 <quote v-else>{{notice}}</quote>
             </div>
@@ -25,14 +26,14 @@
             <!--文章列表-->
             <main class="site-main" :class="{'search':hideSlogan}">
                 <section-title v-if="!hideSlogan">推荐</section-title>
-                <template v-for="item in postList">
+                <template v-for="item in articles">
                     <post :post="item" :key="item.id"></post>
                 </template>
             </main>
 
             <!--加载更多-->
             <div class="more" v-show="hasNextPage">
-                <div class="more-btn" @click="loadMore">More</div>
+                <div class="more-btn" @click="getMoreArticles">More</div>
             </div>
         </div>
     </div>
@@ -45,17 +46,32 @@
     import Post from '@/components/post'
     import SmallIco from '@/components/small-ico'
     import Quote from '@/components/quote'
-    import {fetchFocus, fetchList} from '../api'
+
+    import homeApi from '@/api/home'
+    import siteApi from '@/api/site'
 
     export default {
         name: 'Home',
-        props: ['cate', 'words'],
         data() {
             return {
+                /* 焦点图数据 */
                 features: [],
-                postList: [],
+                /* 文章列表数据 */
+                articles: [],
+                /* 当前页 */
                 currPage: 1,
-                hasNextPage: false
+                /* 当页显示数 */
+                size: 2,
+                /* 是否存在下一页 */
+                hasNextPage: false,
+                /* 文章查询对象 */
+                articleQuery: {
+                    title: '',
+                    cateId: '',
+                    tagId: ''
+                },
+                /* 首页背景图 */
+                bannerUrl: ''
             }
         },
         components: {
@@ -73,42 +89,62 @@
             category() {
                 return this.$route.params.cate
             },
+            tagInfo() {
+                return this.$route.params.tag
+            },
             hideSlogan() {
-                return this.category || this.searchWords
+                return this.category || this.searchWords || this.tagInfo
             },
             notice() {
                 return this.$store.getters.notice
             }
         },
         methods: {
-            fetchFocus() {
-                fetchFocus().then(res => {
-                    this.features = res.data || []
-                }).catch(err => {
-                    console.log(err)
+            /* 获取文章列表数据 */
+            getArticlesList() {
+                this.articleQuery.title = this.searchWords
+                this.articleQuery.cateId = this.category
+                this.articleQuery.tagId = this.tagInfo
+                // 调用api
+                homeApi.getArticlePage(this.currPage, this.size, this.articleQuery).then(res => {
+                    this.articles = res.data.articles
+                    this.currPage = res.data.current
+                    this.hasNextPage = res.data.hasNext
                 })
             },
-            fetchList() {
-                fetchList().then(res => {
-                    this.postList = res.data.items || []
-                    this.currPage = res.data.page
-                    this.hasNextPage = res.data.hasNextPage
-                }).catch(err => {
-                    console.log(err)
+            /* TODO 获取更多的文章列表数据 */
+            getMoreArticles() {
+                // 调用api
+                homeApi.getArticlePage(this.currPage + 1, this.size, this.articleQuery).then(res => {
+                    this.articles = this.articles.concat(res.data.articles)
+                    this.currPage = res.data.current
+                    this.hasNextPage = res.data.hasNext
                 })
             },
-            loadMore() {
-                fetchList({page:this.currPage+1}).then(res => {
-                    this.postList = this.postList.concat(res.data.items || [])
-                    this.currPage = res.data.page
-                    this.hasNextPage = res.data.hasNextPage
+            /* 获取焦点图数据 */
+            getFocusImages() {
+                homeApi.getFeatures().then(res => {
+                    this.features = res.data.features
+                })
+            },
+            /* 获取首页背景图 */
+            getHomeBanner() {
+                siteApi.selectSiteInfo().then(res => {
+                    this.bannerUrl = res.data.siteInfo.banner
                 })
             }
         },
         mounted() {
-            this.fetchFocus();
-            this.fetchList();
-        }
+            this.getFocusImages()
+            this.getArticlesList()
+            this.getHomeBanner()
+        },
+        watch: {
+            /* 监听路由变化 */
+            $route(newValue, oldValue) {
+                this.getArticlesList()
+            }
+        },
     }
 </script>
 <style scoped lang="less">
