@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {getTimeInterval} from '../utils/index'
-import {fetchSocial,fetchSiteInfo} from '@/api/'
 import siteApi from '@/api/site'
 
 Vue.use(Vuex)
@@ -12,7 +11,8 @@ const state = {
     loading: false,
     runTimeInterval: '',
     socials: '',
-    websiteInfo: ''
+    websiteInfo: '',
+    token: ''
 }
 const mutations = {
     SET_LOADING: (state, v) => {
@@ -22,7 +22,10 @@ const mutations = {
         state.socials = v;
     },
     SET_SITE_INFO: (state, v) =>{
-      state.websiteInfo = v;
+        state.websiteInfo = v;
+    },
+    SET_TOKEN: (state, v) => {
+        state.token = v
     },
     GET_RUNTIME_INTERVAL: (state) => {
         if (!timer || !state.runTimeInterval) {
@@ -75,7 +78,8 @@ const actions = {
 const getters = {
     loading: state => state.loading,
     runTimeInterval: state => state.runTimeInterval,
-    notice: state => state.websiteInfo?state.websiteInfo.notice:''
+    notice: state => state.websiteInfo?state.websiteInfo.notice:'',
+    token: state => state.token
 }
 export default new Vuex.Store({
     state,

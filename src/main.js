@@ -7,7 +7,8 @@ import './assets/font/iconfont.css'
 require('./Mock')
 import {parseTime} from './utils'
 
-
+import './utils/element-ui'
+import 'element-ui/lib/theme-chalk/index.css';
 
 Vue.config.productionTip = false
 Vue.filter('parseTime', (v) => parseTime(v,'{y}-{m}-{d}'))

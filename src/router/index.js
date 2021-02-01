@@ -46,6 +46,18 @@ const routes = [
         name: 'article',
         component: () => import('../views/Articles.vue'),
         meta: { title: '文章'}
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: () => import('../views/Login.vue'),
+        meta: { title: '登录'}
+    },
+    {
+        path: '/register',
+        name: 'register',
+        component: () => import('../views/Register.vue'),
+        meta: { title: '注册'}
     }
 ]
 

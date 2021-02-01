@@ -5,10 +5,16 @@ module.exports = {
   plugins: [
     ["prismjs", {
       "languages": ["javascript", "jq", "css", "less", "xml-doc", "yaml", "markdown", "nginx", "markup", "html", "java", "javadoc", "sql", "git", "icon"],
-      "plugins": ["line-numbers","highlight-keywords","jsonp-highlight","previewers"],
+      "plugins": ["line-numbers", "highlight-keywords", "jsonp-highlight", "previewers"],
       "theme": "tomorrow",
       "css": true
-    }]
+    }],
+    [
+      "component",
+      {
+        "libraryName": "element-ui",
+        "styleLibraryName": "theme-chalk"
+      }
+    ]
   ]
 }
-

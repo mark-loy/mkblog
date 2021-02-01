@@ -1,5 +1,8 @@
 import axios from 'axios'
 import store from '@/store'
+import {
+    Message
+} from 'element-ui'
 
 // create an axios instance
 const service = axios.create({
@@ -10,15 +13,14 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
     config => {
-        // do something before request is sent
-
-        // if (store.getters.token) {
-        //     config.headers['X-Token'] = getToken()
-        // }
+        if (store.getters.token) {
+            config.headers['X-Token'] = store.getters.token
+        }
         return config
     },
     error => {
         // do something with request error
+        Message.error(error)
         console.log(error) // for debug
         return Promise.reject(error)
     }
@@ -42,12 +44,14 @@ service.interceptors.response.use(
 
         // if the custom code is not 20000, it is judged as an error.
         if (res.code !== 20000) {
+            Message.error(res.message)
             return Promise.reject(new Error(res.message || 'Error'))
         } else {
             return res
         }
     },
     error => {
+        Message.error(error)
         console.log('err' + error) // for debug
         return Promise.reject(error)
     }
