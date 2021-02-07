@@ -9,6 +9,21 @@ export default {
       method: 'get',
       url: `${BASE_API}/${aid}`
     })
+  },
+  /* 查询文章的评论信息 */
+  selectArticleComments(aid) {
+    return request({
+      method: 'get',
+      url: `${BASE_API}/comment/${aid}`
+    })
+  },
+  /* 保存评论 */
+  saveComment(commentForm) {
+    return request({
+      method: 'post',
+      url: `${BASE_API}/comment`,
+      data: commentForm
+    })
   }
 
 }

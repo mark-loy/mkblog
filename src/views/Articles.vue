@@ -105,7 +105,7 @@
           <!--声明-->
           <div class="open-message">
             <p>
-              声明：Gblog博客|版权所有，违者必究|如未注明，均为原创|本网站采用<a
+              声明：muke博客|版权所有，违者必究|如未注明，均为原创|本网站采用<a
                 href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
                 target="_blank"
                 >BY-NC-SA</a
@@ -116,18 +116,27 @@
               <a :href="'/article/' + article.id">{{ article.title }} </a>
             </p>
           </div>
+          <!-- 评论编辑区 -->
+          <div>
+            <div>全部评论({{total}})</div>
+            <comment-message-editor
+              class="comment-editor"
+              buttonText="评论"
+              @submit="submitComment"
+              ref="commentEditorRef"
+            ></comment-message-editor>
+          </div>
           <!--评论-->
           <div class="comments">
-            <comment
-              v-for="item in comments"
-              :key="item.comment.id"
-              :comment="item.comment"
-            >
-              <template v-if="item.reply.length">
+            <comment v-for="item in comments" :key="item.id" :comment="item" :articleId="article.id" :parentId="item.id" @refreshComments="getComment">
+              <template v-if="item.children.length">
                 <comment
-                  v-for="reply in item.reply"
+                  v-for="reply in item.children"
                   :key="reply.id"
                   :comment="reply"
+                  :articleId="article.id"
+                  :parentId="item.id"
+                  @refreshComments="getComment"
                 ></comment>
               </template>
             </comment>
@@ -146,9 +155,10 @@ import menuTree from "@/components/menu-tree";
 
 import articleApi from "@/api/article";
 
-// 引入代码高亮插件
-import Prism from 'prismjs';
+import commentMessageEditor from "comment-message-editor";
 
+// 引入代码高亮插件
+import Prism from "prismjs";
 
 export default {
   name: "articles",
@@ -157,7 +167,21 @@ export default {
       /* 文章对象 */
       article: {},
       showDonate: false,
+      /* 评论列表 */
       comments: [],
+      /* 评论总数 */
+      total: 0,
+      /* 评论表单 */
+      commentForm: {
+        /* 文章id */
+        articleId: '',
+        /* 评论类型 */
+        parentId: 0,
+        /* 接收人id */
+        acceptId: '',
+        /* 评论内容 */
+        content: ''
+      },
       /* 目录 */
       menus: [],
       height: 0,
@@ -168,14 +192,28 @@ export default {
     sectionTitle,
     comment,
     menuTree,
-    Prism
+    Prism,
+    commentMessageEditor,
+  },
+  created() {
+    // 获取路由中的文章id
+    if (this.$route.params && this.$route.params.id) {
+      this.article.id = this.$route.params.id;
+    }
+    this.getArticleDetail();
+    this.getComment();
+  },
+  mounted() {
+    // 等待页面目录渲染完整
+    setTimeout(() => {
+      this.menusDivHeight();
+    }, 200);
   },
   methods: {
     /* 获取文章详情数据 */
     getArticleDetail() {
       // 调用api
       articleApi.getArticleDetail(this.article.id).then((res) => {
-        console.log(res.data);
         // 设置文章详情数据
         this.article = res.data.article;
         // 当数据渲染完毕执行
@@ -183,19 +221,18 @@ export default {
           // 生成目录
           this.createMenus();
           this.createPreCode();
-          Prism.highlightAll()
+          Prism.highlightAll();
         });
       });
     },
     /* 获取文章评论 */
     getComment() {
-      fetchComment()
-        .then((res) => {
-          this.comments = res.data || [];
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      // 调用api
+      articleApi.selectArticleComments(this.article.id).then((res) => {
+        // 设置评论数据
+        this.comments = res.data.comments;
+        this.total = res.data.total
+      });
     },
     fetchH(arr, left, right) {
       if (right) {
@@ -209,7 +246,9 @@ export default {
     /* 获取目录div的高度 */
     menusDivHeight() {
       let e = document.querySelector("#article-menus");
-      this.height = -e.offsetHeight;
+      if (e !== null) {
+        this.height = -e.offsetHeight;
+      }
     },
     // 生成目录
     createMenus() {
@@ -251,7 +290,7 @@ export default {
         // 遍历
         for (let i = 0; i < pres.length; i++) {
           const pre = pres[i];
-          const code = pre.childNodes[0]
+          const code = pre.childNodes[0];
           // 获取当前pre的class属性
           let preClass = pre.getAttribute("class");
           // 截取出class的语言部分
@@ -262,20 +301,26 @@ export default {
         }
       }
     },
-  },
-  created() {
-    // 获取路由中的文章id
-    if (this.$route.params && this.$route.params.id) {
-      this.article.id = this.$route.params.id;
-    }
-    this.getArticleDetail();
-
-  },
-  mounted() {
-    // 等待页面目录渲染完整
-    setTimeout(() => {
-      this.menusDivHeight();
-    }, 500);
+    /* 提交文章评论 */
+    submitComment(v) {
+      // 验证访客是否登录
+      if(this.$store.state.token) {
+        // 设置评论的提交表单
+        this.commentForm.articleId = this.article.id
+        this.commentForm.acceptId = this.article.userId
+        this.commentForm.content = v
+        // 调用api
+        articleApi.saveComment(this.commentForm).then(res => {
+          // 提示
+          this.$message.success("评论成功")
+          // 刷新评论数据
+          window.location.href = "/article/" + this.article.id
+        })
+      } else{
+        // 提示
+        this.$message.warning("登录后评论")
+      }
+    },
   },
 };
 </script>
@@ -456,6 +501,10 @@ article.hentry {
       color: #a0dad0;
       padding: 0 5px;
     }
+  }
+
+  .comment-editor {
+    margin: 20px 0;
   }
 }
 </style>

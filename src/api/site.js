@@ -16,5 +16,20 @@ export default {
       method: 'get',
       url: `${BASE_API}/social/`
     })
+  },
+  /* 获取友站信息 */
+  selectFriendSiteInfo() {
+    return request({
+      method: 'get',
+      url: `${BASE_API}/friend/`
+    })
+  },
+  /* 保存留言 */
+  saveGuestbook(guestbookForm) {
+    return request({
+      method: 'post',
+      url: `${BASE_API}/guestbook/`,
+      data: guestbookForm
+    })
   }
 }

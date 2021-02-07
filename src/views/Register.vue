@@ -42,8 +42,8 @@
             placeholder="验证码"
             style="width: 170px"
           ></el-input>
-          <el-button @click="sendMailCode" type="primary" style="float: right"
-            >获取验证码</el-button
+          <el-button @click="sendMailCode" :disabled="codeState" type="primary" style="float: right"
+            >{{codeText}} </el-button
           >
         </el-form-item>
 
@@ -63,6 +63,7 @@
 
 <script>
 import ucenterApi from "@/api/ucenter";
+import mailApi from '@/api/mail'
 
 export default {
   data() {
@@ -111,6 +112,12 @@ export default {
         email: [{ validator: checkEmail, trigger: "blur" }],
         code: [{ required: true, message: "请输入验证码", trigger: "blur" }],
       },
+      /* 验证码文本 */
+      codeText: "获取验证码",
+      /* 获取验证码间隔时长 */
+      timer: 60,
+      /* 控制验证码按钮状态 */
+      codeState: false
     };
   },
   methods: {
@@ -136,14 +143,33 @@ export default {
       // 判断邮件地址
       if (this.registerForm.email) {
         // 调用api
-        ucenterApi.sendMailCode(this.registerForm.email).then((res) => {
+        mailApi.sendMailCode(this.registerForm.email).then((res) => {
           // 提示
           this.$message.success("验证码发送成功，请注意查收");
+          // 调用定时器
+          this.codeTimer()
         });
       } else {
         this.$message.warning("请先填写邮件地址");
       }
     },
+    /* 验证码定时器 */
+    codeTimer() {
+      var timer = setInterval(() => {
+          --this.timer
+          this.codeText = this.timer
+          // 按钮改为不可用
+          this.codeState = true
+          if (this.timer < 1) {
+            // 关闭定时器
+            clearInterval(timer)
+            this.codeText = "获取验证码"
+            this.codeState = false
+            // 还原倒计时
+            this.timer = 60
+          }
+        }, 1000);
+    }
   },
 };
 </script>

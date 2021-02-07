@@ -1,7 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {getTimeInterval} from '../utils/index'
+import {
+    getTimeInterval
+} from '../utils/index'
 import siteApi from '@/api/site'
+import ucenterApi from '@/api/ucenter'
+
+import createPersistedState from 'vuex-persistedstate'
 
 Vue.use(Vuex)
 // 略:后台获取系统运行时间
@@ -12,7 +17,8 @@ const state = {
     runTimeInterval: '',
     socials: '',
     websiteInfo: '',
-    token: ''
+    token: '',
+    visitorInfo: ''
 }
 const mutations = {
     SET_LOADING: (state, v) => {
@@ -21,11 +27,14 @@ const mutations = {
     SET_SOCIALS: (state, v) => {
         state.socials = v;
     },
-    SET_SITE_INFO: (state, v) =>{
+    SET_SITE_INFO: (state, v) => {
         state.websiteInfo = v;
     },
     SET_TOKEN: (state, v) => {
         state.token = v
+    },
+    SET_VISITOR_INFO: (state, v) => {
+        state.visitorInfo = v
     },
     GET_RUNTIME_INTERVAL: (state) => {
         if (!timer || !state.runTimeInterval) {
@@ -37,21 +46,28 @@ const mutations = {
     }
 }
 const actions = {
-    setLoading: ({commit}, v) => {
+    setLoading: ({
+        commit
+    }, v) => {
         commit('SET_LOADING', v);
     },
-    initComputeTime: ({commit}) => {
+    initComputeTime: ({
+        commit
+    }) => {
         commit('GET_RUNTIME_INTERVAL');
     },
-    getSiteInfo: ({commit,state}) =>{
+    getSiteInfo: ({
+        commit,
+        state
+    }) => {
         return new Promise(resolve => {
-            if (state.websiteInfo){
+            if (state.websiteInfo) {
                 resolve(state.websiteInfo)
-            }else {
+            } else {
                 // 获取所有的站点信息
                 siteApi.selectSiteInfo().then(res => {
                     let data = res.data.siteInfo || {}
-                    commit('SET_SITE_INFO',data);
+                    commit('SET_SITE_INFO', data);
                     resolve(data);
                 }).catch(err => {
                     resolve({});
@@ -59,17 +75,38 @@ const actions = {
             }
         })
     },
-    getSocials: ({commit,state}) =>{
+    getSocials: ({
+        commit,
+        state
+    }) => {
         return new Promise((resolve => {
-            if (state.socials){
+            if (state.socials) {
                 resolve(state.socials)
             } else {
-                siteApi.selectSocialInfo().then(res =>{
+                siteApi.selectSocialInfo().then(res => {
                     let data = res.data.socials || []
-                    commit('SET_SOCIALS',data);
+                    commit('SET_SOCIALS', data);
                     resolve(data);
-                }).catch(err =>{
+                }).catch(err => {
                     resolve([]);
+                })
+            }
+        }))
+    },
+    getVisitor: ({
+        commit,
+        state
+    }) => {
+        return new Promise((resolve => {
+            if (Object.keys(state.visitorInfo).length > 0) {
+                resolve(state.visitorInfo)
+            } else {
+                ucenterApi.getVisitorInfo().then(res => {
+                    // 设置访客信息
+                    commit('SET_VISITOR_INFO', res.data)
+                    resolve(res.data);
+                }).catch(err => {
+                    resolve({});
                 })
             }
         }))
@@ -78,13 +115,21 @@ const actions = {
 const getters = {
     loading: state => state.loading,
     runTimeInterval: state => state.runTimeInterval,
-    notice: state => state.websiteInfo?state.websiteInfo.notice:'',
-    token: state => state.token
+    notice: state => state.websiteInfo ? state.websiteInfo.notice : '',
+    token: state => state.token,
+    visitorInfo: state => state.visitorInfo
 }
 export default new Vuex.Store({
     state,
     mutations,
     actions,
     modules: {},
-    getters
+    getters,
+    // 解决刷新vuex状态丢失问题
+    plugins: [
+        createPersistedState({
+            /* 将vuex数据存储到sessionStorage */
+            storage: window.sessionStorage
+        })
+    ]
 })

@@ -1,12 +1,12 @@
 <template>
   <div id="app" v-cloak>
     <loading></loading>
-    <div v-show="!isShow">
+    <div v-if="!isShow">
       <layout-header></layout-header>
       <layout-body></layout-body>
       <layout-footer></layout-footer>
     </div>
-    <div v-show="isShow">
+    <div v-if="isShow">
       <router-view />
     </div>
   </div>

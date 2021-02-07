@@ -27,8 +27,12 @@
     </div>
     <!-- 第三方登录 -->
     <div class="other">
-      <i class="iconfont icongitee" style="color: rgb(199, 29, 35)"></i>
-      <i class="iconfont icongithub" style="color: #333"></i>
+      <a href="http://192.168.166.128:600/api/ucenter/login/github/">
+        <i class="iconfont icongithub" style="color: #333"></i>
+      </a>
+      <a href="http://192.168.166.128:600/api/ucenter/login/gitee/">
+        <i class="iconfont icongitee" style="color: rgb(199, 29, 35)"></i>
+      </a>
     </div>
   </div>
 </template>
@@ -75,12 +79,12 @@ export default {
           // 校验成功，调用api
           ucenterApi.toLogin(this.loginForm).then((res) => {
             // 提示
-            this.$message.success("登录成功")
+            this.$message.success("登录成功");
             // 设置token
             console.log(res.data.token);
-            this.$store.commit('SET_TOKEN', res.data.token)
+            this.$store.commit("SET_TOKEN", res.data.token);
             // 跳转到首页
-            //this.$router.push("/");
+            this.$router.push("/");
           });
         } else {
           console.log("error submit!!");
@@ -90,8 +94,8 @@ export default {
     },
     /* 跳转到注册页面 */
     toRegister() {
-      this.$router.push("/register")
-    }
+      this.$router.push("/register");
+    },
   },
 };
 </script>
