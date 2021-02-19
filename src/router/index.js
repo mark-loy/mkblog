@@ -12,7 +12,7 @@ const routes = [
         meta: { title: '首页'}
     },
     {
-        path: '/category/:cate',
+        path: '/category/:cate/:name',
         name: 'category',
         component: () => import('../views/Home.vue'),
         meta: { title: '分类', params: 'cate'}
@@ -24,7 +24,7 @@ const routes = [
         meta: { title: '搜索', params: 'words'}
     },
     {
-        path: '/search/:tag',
+        path: '/tag/:tag/:name',
         name: 'search',
         component: () => import('../views/Home.vue'),
         meta: { title: '标签', params: 'tag'}
@@ -62,12 +62,12 @@ const routes = [
 ]
 
 const router = new VueRouter({
-    mode: 'history',
+    mode: 'hash',
     base: process.env.BASE_URL,
     routes
 })
 router.beforeEach((to, from, next) => {
-    let title = 'Gblog'
+    let title = '木可个人博客'
     if (to.meta.params){
         title = `${to.meta.title}:${to.params[to.meta.params] || ''} - ${title}`
     }else {

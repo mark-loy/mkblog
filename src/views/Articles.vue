@@ -207,7 +207,7 @@ export default {
     // 等待页面目录渲染完整
     setTimeout(() => {
       this.menusDivHeight();
-    }, 200);
+    }, 1000);
   },
   methods: {
     /* 获取文章详情数据 */

@@ -15,7 +15,7 @@
                     <!-- 社交信息 -->
                     <div class="top-social">
                         <div v-for="item in socials" :key="item.id" :title="item.name">
-                            <a :href="item.href" target="_blank" :style="{'color':item.color}">
+                            <a :href="item.linkUrl" target="_blank" :style="{'color':item.color}">
                                 <i class="iconfont" :class="item.icon"></i>
                             </a>
                         </div>

@@ -19,7 +19,7 @@
         <quote>
           <p>站点名称：{{ websiteInfo.name }}</p>
           <p>站点链接：{{ websiteInfo.domain }}</p>
-          <p>头像链接：</p>
+          <p>头像链接：{{ websiteInfo.domain }}/image.png</p>
           <p>简短描述：{{ websiteInfo.slogan }}</p>
         </quote>
         <p>接入成功后将会以邮件的方式通知。</p>

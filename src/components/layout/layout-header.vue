@@ -10,7 +10,11 @@
         <p class="site-name">muke</p>
       </router-link>
     </div>
-    <div class="menus-btn" @click.stop="mobileShow = !mobileShow">Menus</div>
+
+    <div class="menus-btn" @click.stop="mobileShow = !mobileShow">
+      <img src="@/assets/折叠.svg" width="24px" alt="" />
+    </div>
+
     <div
       class="site-menus"
       :class="{ mobileShow: mobileShow }"
@@ -26,18 +30,17 @@
       <div class="menu-item" v-if="!$store.getters.token">
         <router-link to="/register">注册</router-link>
       </div>
-      <div class="menu-item" v-if="$store.getters.token">
-        <el-dropdown class="avatar-container" trigger="click">
-          <div class="avatar-wrapper">
-            <img :src="visitorInfo.avatar" class="user-avatar" />
-            <i class="el-icon-caret-bottom" />
-          </div>
-          <el-dropdown-menu slot="dropdown" class="user-dropdown">
-            <el-dropdown-item divided @click.native="logout">
-              <span style="display: block">退出</span>
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+      <div class="menu-item hasChild" v-if="$store.getters.token">
+        <el-avatar
+          class="item-avatar"
+          :size="36"
+          :src="visitorInfo.avatar"
+        ></el-avatar>
+        <div class="childMenu">
+          <!--  <a href="/user/info" class="sub-menu my-menu">个人中心</a> -->
+          <div class="sub-menu my-menu" @click="logout">退出</div>
+        </div>
+        <div class="menu-item" @click="logout" :style="{visibility: logoutShow}">退出</div>
       </div>
     </div>
   </div>
@@ -56,6 +59,7 @@ export default {
       hidden: false,
       category: [],
       mobileShow: false,
+      logoutShow: 'hidden',
       /* 访客数据 */
       visitorInfo: this.$store.getters.visitorInfo,
     };
@@ -74,9 +78,11 @@ export default {
   },
   mounted() {
     window.addEventListener("scroll", this.watchScroll);
+    window.addEventListener("resize", this.windowWidth);
   },
   beforeDestroy() {
     window.removeEventListener("scroll", this.watchScroll);
+    window.removeEventListener("resize", this.windowWidth);
   },
   methods: {
     watchScroll() {
@@ -94,6 +100,15 @@ export default {
         this.hidden = false;
       }
       this.lastScrollTop = scrollTop;
+    },
+    /* 窗口宽度 */
+    windowWidth() {
+      let width = window.innerWidth
+      if (width <= 590) {
+        this.logoutShow = 'visible'
+      } else {
+        this.logoutShow = 'hidden'
+      }
     },
     /* 访客退出 */
     logout() {
@@ -152,6 +167,9 @@ export default {
   display: flex;
   align-items: center;
 
+  .phone-logout {
+    display: none;
+  }
   .menu-item {
     min-width: 60px;
     height: 50px;
@@ -175,28 +193,29 @@ export default {
       visibility: visible;
       transform: translateY(-5px);
     }
-    .avatar-container {
-      height: 50px;
-      display: inline-block;
+    .item-avatar {
+      margin-top: 9px;
+    }
+    .childMenu {
+      width: 130px;
+      background-color: #fdfdfd;
+      border-radius: 3px;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
       position: absolute;
-      right: 17px;
-      .avatar-wrapper {
-        cursor: pointer;
-        margin-top: 5px;
+      top: 55px;
+      z-index: 2;
+      .sub-menu {
+        height: 40px;
+        line-height: 40px;
         position: relative;
-        line-height: initial;
-        .user-avatar {
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
+      }
+      .my-menu {
+        cursor: pointer;
+        color: #545454;
+        &:hover {
+          color: #ff6d6d;
         }
-        .el-icon-caret-bottom {
-          position: absolute;
-          right: -20px;
-          top: 25px;
-          font-size: 12px;
-        }
-        
       }
     }
   }
@@ -262,6 +281,9 @@ export default {
     display: block;
     visibility: visible;
   }
+  .header-search {
+    margin-right: 10px;
+  }
   .site-menus {
     position: absolute;
     display: none;
@@ -277,26 +299,6 @@ export default {
       height: unset;
       &:not(:last-child) {
         margin-right: 0;
-      }
-    }
-    .childMenu {
-      position: relative;
-      width: 100%;
-      top: 0;
-      background-color: #f3f3f3;
-      opacity: 1;
-      visibility: visible;
-      border: none;
-      box-shadow: none;
-      &:before,
-      &:after {
-        content: "";
-        position: relative;
-        width: 0;
-        height: 0;
-        border-left: 0;
-        border-right: 0;
-        border-bottom: 0;
       }
     }
   }

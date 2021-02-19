@@ -27,10 +27,10 @@
     </div>
     <!-- 第三方登录 -->
     <div class="other">
-      <a href="http://192.168.166.128:600/api/ucenter/login/github/">
+      <a :href="BASE_API + 'ucenter/login/github/'">
         <i class="iconfont icongithub" style="color: #333"></i>
       </a>
-      <a href="http://192.168.166.128:600/api/ucenter/login/gitee/">
+      <a :href="BASE_API + 'ucenter/login/gitee/'">
         <i class="iconfont icongitee" style="color: rgb(199, 29, 35)"></i>
       </a>
     </div>
@@ -69,6 +69,7 @@ export default {
           },
         ],
       },
+      BASE_API: process.env.VUE_APP_BASE_API
     };
   },
   methods: {

@@ -24,5 +24,19 @@ export default {
       method: 'get',
       url: `${BASE_API}/focus`
     })
+  },
+  /* 获取所有分类 */
+  getAllCategory() {
+    return request({
+      method: 'get',
+      url: `${BASE_API}/all/category`
+    })
+  },
+  /* 获取所有标签 */
+  getAllTag() {
+    return request({
+      method: 'get',
+      url: `${BASE_API}/all/tag`
+    })
   }
 }

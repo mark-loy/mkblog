@@ -6,15 +6,7 @@
           <section-title><span>❤</span>关于博客</section-title>
           <div class="info-card">
             <p>
-              偶然之间看见了<a
-                target="_blank"
-                class="out-link"
-                href="https://zhebk.cn/Web/Akina.html"
-                >Akina For Typecho</a
-              >博客的主题，风格很是喜欢。
-            </p>
-            <p>
-              然后就开始用Vue搭建这种风格的博客，在此呢也将这套模板开放给大家。
+              我得非常感谢 fengziy (就叫疯子先生吧)，他提供了一套完善的前端的个人博客模板，省了我很多不必要的时间，必须支持疯子先生。想了解疯子先生的博客模板的，可以看看
             </p>
             <p>
               <a

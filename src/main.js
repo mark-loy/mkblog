@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import './assets/css/style.less'
 import './assets/font/iconfont.css'
-require('./Mock')
+
 import {parseTime} from './utils'
 
 import './utils/element-ui'
